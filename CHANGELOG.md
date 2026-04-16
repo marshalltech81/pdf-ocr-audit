@@ -9,7 +9,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 ### Added
 
-- No unreleased changes yet.
+- Added a repository `SECURITY.md` policy that points reporters to GitHub private
+  vulnerability reporting.
 
 ## [0.1.0] - 2026-04-16
 

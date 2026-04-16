@@ -84,3 +84,15 @@ def test_configure_third_party_logging_suppresses_pypdf_warnings() -> None:
         assert logger.level == logging.ERROR
     finally:
         logger.setLevel(original_level)
+
+
+def test_configure_third_party_logging_preserves_stricter_level() -> None:
+    logger = logging.getLogger("pypdf")
+    original_level = logger.level
+    logger.setLevel(logging.CRITICAL)
+
+    try:
+        configure_third_party_logging()
+        assert logger.level == logging.CRITICAL
+    finally:
+        logger.setLevel(original_level)

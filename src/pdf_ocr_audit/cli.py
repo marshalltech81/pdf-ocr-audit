@@ -109,8 +109,11 @@ def build_deep_scan_config(args: argparse.Namespace) -> DeepScanConfig | None:
 
 def configure_third_party_logging() -> None:
     # pypdf emits warning logs for malformed-but-readable PDFs. Keep CLI output
-    # focused on audit results instead of parser recovery noise.
-    logging.getLogger("pypdf").setLevel(logging.ERROR)
+    # focused on audit results instead of parser recovery noise, without
+    # overriding a stricter user-provided setting such as CRITICAL.
+    pypdf_logger = logging.getLogger("pypdf")
+    if pypdf_logger.getEffectiveLevel() < logging.ERROR:
+        pypdf_logger.setLevel(logging.ERROR)
 
 
 def main(argv: Sequence[str] | None = None) -> int:

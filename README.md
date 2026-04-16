@@ -179,6 +179,15 @@ The repository includes two workflows:
 - `CI`: runs lint, format, typing, tests, CLI smoke checks, and package builds on Python `3.11`, `3.12`, and `3.13`
 - `Security`: runs `bandit` on source code and `pip-audit` on dependencies on `main`, on a weekly schedule, and on manual dispatch
 
+### Dependabot
+
+The repository also includes Dependabot configuration for:
+
+- `uv` dependency updates from the root `pyproject.toml` / `uv.lock`
+- GitHub Actions version updates under `.github/workflows/`
+
+Both are scheduled weekly and grouped to reduce PR noise.
+
 ### Project Layout
 
 - `src/pdf_ocr_audit/`: package source

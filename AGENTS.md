@@ -26,6 +26,7 @@ Changes should preserve that focus. Prefer clear, audit-friendly behavior over c
 - `src/pdf_ocr_audit/text_utils.py`: normalization and text comparison helpers
 - `tests/`: programmatic PDF fixtures and regression tests
 - `.pre-commit-config.yaml`: local quality gates for contributors
+- `.github/dependabot.yml`: automated dependency and GitHub Actions update policy
 - `.github/workflows/ci.yml`: primary GitHub Actions validation workflow
 - `.github/workflows/security.yml`: scheduled and on-demand security checks
 
@@ -74,6 +75,8 @@ Changes are expected to keep these checks green:
 `pip-audit` is part of the GitHub security workflow and may rely on network access that is not always available in local sandboxed runs.
 
 Live PaddleOCR verification is intentionally not part of default CI because PaddlePaddle installation is platform-specific and heavyweight. Keep deep-scan behavior covered with unit tests that inject fake OCR runtimes, and document any manual validation you perform with a real Paddle environment.
+
+Dependabot is configured for both `uv` and `github-actions`. When changing dependency layout or workflow locations, keep `.github/dependabot.yml` aligned so automated updates continue to work.
 
 ## Editing Guidance
 

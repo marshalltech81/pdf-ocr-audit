@@ -177,7 +177,7 @@ uv run pre-commit run --all-files
 The repository includes three workflows:
 
 - `CI`: runs lint, format, typing, tests, CLI smoke checks, and package builds on Python `3.11`, `3.12`, and `3.13`
-- `Security`: runs `bandit` on source code and `pip-audit` on dependencies on `main`, on a weekly schedule, and on manual dispatch
+- `Security`: runs `bandit` on source code and `pip-audit` on dependencies for pull requests, on `main`, on a weekly schedule, and on manual dispatch
 - `Release`: runs quality checks on pushed version tags, builds distributions, and creates a GitHub Release using the matching `CHANGELOG.md` section
 
 ### Dependabot

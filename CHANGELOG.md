@@ -11,6 +11,8 @@ and this project aims to follow [Semantic Versioning](https://semver.org/spec/v2
 
 - Added a repository `SECURITY.md` policy that points reporters to GitHub private
   vulnerability reporting.
+- Security workflow jobs now run on pull requests in addition to `main`,
+  scheduled runs, and manual dispatch.
 
 ## [0.1.0] - 2026-04-16
 

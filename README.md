@@ -174,10 +174,11 @@ uv run pre-commit run --all-files
 
 ### GitHub Actions
 
-The repository includes two workflows:
+The repository includes three workflows:
 
 - `CI`: runs lint, format, typing, tests, CLI smoke checks, and package builds on Python `3.11`, `3.12`, and `3.13`
 - `Security`: runs `bandit` on source code and `pip-audit` on dependencies on `main`, on a weekly schedule, and on manual dispatch
+- `Release`: runs quality checks on pushed version tags, builds distributions, and creates a GitHub Release using the matching `CHANGELOG.md` section
 
 ### Dependabot
 
@@ -188,15 +189,65 @@ The repository also includes Dependabot configuration for:
 
 Both are scheduled weekly and grouped to reduce PR noise.
 
+### Release Process
+
+This repository uses a lightweight changelog-first release flow:
+
+1. Add user-visible changes to the `Unreleased` section in `CHANGELOG.md`.
+2. When cutting a release, move those entries into a new versioned section such as `## [0.2.0] - 2026-04-16`.
+3. Bump `version` in `pyproject.toml` to match the release version.
+4. Run the full local quality bar:
+
+```bash
+uv run ruff check .
+uv run ruff format --check .
+uv run mypy src
+uv run pytest
+uv run bandit -q -r src
+uv build
+```
+
+5. Open and merge a release PR with the version bump and changelog updates.
+6. Create and push a matching tag from the merged commit on `main`:
+
+```bash
+git switch main
+git pull --rebase origin main
+git tag v0.2.0
+git push origin v0.2.0
+```
+
+7. The `Release` workflow validates that the tag matches `pyproject.toml`, builds `dist/*`, and creates a GitHub Release whose body comes from the matching `CHANGELOG.md` section.
+
+The current release automation creates GitHub Releases and build artifacts, but it does not publish to PyPI.
+
+Prefer commit messages and PR titles that follow the Conventional Commits 1.0.0 specification:
+https://www.conventionalcommits.org/en/v1.0.0/#specification
+
+### Repository Security Features
+
+The GitHub repository is configured to use:
+
+- Dependabot alerts
+- Dependabot security updates
+- code scanning default setup
+- private vulnerability reporting
+- secret scanning
+- push protection
+
 ### Project Layout
 
 - `src/pdf_ocr_audit/`: package source
 - `tests/`: unit tests
+- `scripts/extract_changelog.py`: helper for tag-driven release notes
+- `CHANGELOG.md`: release history and unreleased change queue
 - `AGENTS.md`: contributor and coding-agent guidance
+- `CLAUDE.md`: shim that points contributors back to `AGENTS.md`
 
 ## Limitations
 
 - The tool verifies the presence of extractable text, not the semantic accuracy of OCR.
 - Some PDFs contain text objects that are not meaningful OCR output. Tune `--min-chars` when needed.
+- AES-encrypted PDFs rely on the bundled `cryptography` dependency so the audit can determine whether the file opens without a password.
 - Password-protected PDFs are treated as errors unless they can be opened without a password.
 - Deep scan is still a proxy for OCR accuracy. It compares embedded text to a second OCR pass; it is not a ground-truth benchmark.

@@ -24,11 +24,15 @@ Changes should preserve that focus. Prefer clear, audit-friendly behavior over c
 - `src/pdf_ocr_audit/cli.py`: argparse CLI and exit-code handling
 - `src/pdf_ocr_audit/models.py`: shared dataclasses for page/file/run results
 - `src/pdf_ocr_audit/text_utils.py`: normalization and text comparison helpers
+- `scripts/extract_changelog.py`: helper for extracting release notes from `CHANGELOG.md`
 - `tests/`: programmatic PDF fixtures and regression tests
+- `CHANGELOG.md`: release history plus the `Unreleased` queue
+- `CLAUDE.md`: shim that points tooling back to `AGENTS.md`
 - `.pre-commit-config.yaml`: local quality gates for contributors
 - `.github/dependabot.yml`: automated dependency and GitHub Actions update policy
 - `.github/workflows/ci.yml`: primary GitHub Actions validation workflow
 - `.github/workflows/security.yml`: scheduled and on-demand security checks
+- `.github/workflows/release.yml`: tag-driven GitHub Release workflow using `CHANGELOG.md`
 
 ## Behavioral Contracts
 
@@ -60,6 +64,15 @@ uv run bandit -q -r src
 uv build
 uv lock
 ```
+
+## Release Discipline
+
+- `CHANGELOG.md` is the release source of truth. Keep an `Unreleased` section at the top.
+- Every user-visible change should add or update a changelog entry before release.
+- The version in `pyproject.toml`, the matching changelog header, and the git tag `vX.Y.Z` should agree.
+- The release workflow reads release notes from `CHANGELOG.md`; missing or mismatched entries should be treated as a release blocker.
+- Prefer commit messages and PR titles that follow the Conventional Commits 1.0.0 specification: https://www.conventionalcommits.org/en/v1.0.0/#specification
+- `CLAUDE.md` is intentionally a thin shim. Keep guidance in `AGENTS.md` and avoid duplicating instructions there.
 
 ## Quality Bar
 
@@ -94,6 +107,7 @@ If you add a new option or report field:
 
 - update the CLI help text
 - update `README.md`
+- update `CHANGELOG.md` when the change is user-visible
 - add or adjust tests
 - make sure type checks and coverage still pass
 - preserve backwards-compatible JSON fields unless there is a deliberate versioning decision
@@ -123,4 +137,5 @@ If you change deep scan behavior:
 - silent skips
 - hidden magic thresholds
 - parser-specific behavior leaking into the CLI contract
+- drifting release metadata between `pyproject.toml`, git tags, workflow automation, and `CHANGELOG.md`
 - adding heavyweight OCR engines to this repository unless the scope explicitly changes from auditing to OCR generation

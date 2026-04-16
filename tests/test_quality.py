@@ -29,6 +29,17 @@ class EncryptedReader:
         return []
 
 
+class MissingAesSupportReader:
+    is_encrypted = True
+
+    def decrypt(self, _password: str) -> int:
+        raise RuntimeError("cryptography>=3.1 is required for AES algorithm")
+
+    @property
+    def pages(self) -> list[SimpleNamespace]:
+        return []
+
+
 def test_audit_path_rejects_missing_target(tmp_path: Path) -> None:
     missing = tmp_path / "missing"
 
@@ -62,6 +73,39 @@ def test_audit_pdf_reports_reader_error(monkeypatch: pytest.MonkeyPatch, tmp_pat
 
     assert result.has_error is True
     assert result.error == "Unable to read PDF: cannot read"
+
+
+def test_audit_pdf_reports_missing_aes_support(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    def fake_reader(_path: Path) -> None:
+        raise RuntimeError("cryptography>=3.1 is required for AES algorithm")
+
+    pdf_path = tmp_path / "secret.pdf"
+    monkeypatch.setattr(audit_module, "PdfReader", fake_reader)
+
+    result = audit_module.audit_pdf(pdf_path, root=tmp_path, min_chars=10)
+
+    assert result.has_error is True
+    assert (
+        result.error == "Encrypted PDF requires AES support from the cryptography package before "
+        "password status can be checked. Run uv sync and try again."
+    )
+
+
+def test_audit_pdf_reports_missing_aes_support_during_decrypt(
+    monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+) -> None:
+    pdf_path = tmp_path / "secret.pdf"
+    monkeypatch.setattr(audit_module, "PdfReader", lambda _path: MissingAesSupportReader())
+
+    result = audit_module.audit_pdf(pdf_path, root=tmp_path, min_chars=10)
+
+    assert result.has_error is True
+    assert (
+        result.error == "Encrypted PDF requires AES support from the cryptography package before "
+        "password status can be checked. Run uv sync and try again."
+    )
 
 
 def test_audit_pdf_reports_encrypted_pdf(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

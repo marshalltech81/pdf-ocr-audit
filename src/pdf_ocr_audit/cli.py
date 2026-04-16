@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import argparse
+import logging
 from collections.abc import Sequence
 from pathlib import Path
 
@@ -106,10 +107,17 @@ def build_deep_scan_config(args: argparse.Namespace) -> DeepScanConfig | None:
     )
 
 
+def configure_third_party_logging() -> None:
+    # pypdf emits warning logs for malformed-but-readable PDFs. Keep CLI output
+    # focused on audit results instead of parser recovery noise.
+    logging.getLogger("pypdf").setLevel(logging.ERROR)
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     parser = build_parser()
     args = parser.parse_args(argv)
     deep_scan = build_deep_scan_config(args)
+    configure_third_party_logging()
 
     try:
         report = audit_path(

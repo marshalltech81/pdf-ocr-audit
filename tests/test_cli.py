@@ -1,10 +1,16 @@
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 
 import pytest
 
-from pdf_ocr_audit.cli import build_deep_scan_config, main, zero_to_one_float
+from pdf_ocr_audit.cli import (
+    build_deep_scan_config,
+    configure_third_party_logging,
+    main,
+    zero_to_one_float,
+)
 from tests.helpers import create_pdf
 
 
@@ -66,3 +72,15 @@ def test_build_deep_scan_config_returns_expected_values() -> None:
     assert config.dpi == 300
     assert config.min_confidence == 0.8
     assert config.min_similarity == 0.9
+
+
+def test_configure_third_party_logging_suppresses_pypdf_warnings() -> None:
+    logger = logging.getLogger("pypdf")
+    original_level = logger.level
+    logger.setLevel(logging.WARNING)
+
+    try:
+        configure_third_party_logging()
+        assert logger.level == logging.ERROR
+    finally:
+        logger.setLevel(original_level)

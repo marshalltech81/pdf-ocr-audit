@@ -13,6 +13,7 @@ authors = [
   { name = "MarshallTech81" },
 ]
 dependencies = [
+  "cryptography>=44.0.0",
   "pymupdf>=1.26.0",
   "pypdf>=5.4.0",
 ]

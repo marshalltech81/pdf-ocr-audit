@@ -16,6 +16,8 @@ from .models import (
 )
 from .text_utils import count_alphanumeric_characters, count_words, normalize_text
 
+_MISSING_AES_SUPPORT_ERROR = "cryptography>=3.1 is required for AES algorithm"
+
 
 class TextExtractablePage(Protocol):
     def extract_text(self) -> str | None: ...
@@ -103,13 +105,21 @@ def audit_pdf(
     try:
         reader = PdfReader(path)
     except Exception as exc:
-        return PdfAuditResult(path=display_path, page_count=0, error=f"Unable to read PDF: {exc}")
+        return PdfAuditResult(
+            path=display_path,
+            page_count=0,
+            error=_format_pdf_error("Unable to read PDF", exc),
+        )
 
     if reader.is_encrypted:
         try:
             decrypt_result = reader.decrypt("")
         except Exception as exc:
-            return PdfAuditResult(path=display_path, page_count=0, error=f"Encrypted PDF: {exc}")
+            return PdfAuditResult(
+                path=display_path,
+                page_count=0,
+                error=_format_pdf_error("Encrypted PDF", exc),
+            )
 
         if decrypt_result == 0:
             return PdfAuditResult(
@@ -214,3 +224,13 @@ def _display_path(path: Path, root: Path) -> str:
         return str(path.relative_to(root))
     except ValueError:
         return str(path)
+
+
+def _format_pdf_error(prefix: str, exc: Exception) -> str:
+    message = str(exc)
+    if _MISSING_AES_SUPPORT_ERROR in message:
+        return (
+            "Encrypted PDF requires AES support from the cryptography package before "
+            "password status can be checked. Run uv sync and try again."
+        )
+    return f"{prefix}: {message}"

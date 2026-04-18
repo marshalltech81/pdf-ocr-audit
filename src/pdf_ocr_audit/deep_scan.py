@@ -234,11 +234,11 @@ def coerce_paddle_payload(raw_result: object) -> dict[str, object]:
         candidate = candidate[0]
 
     if hasattr(candidate, "json"):
-        json_payload = candidate.json
+        json_payload = candidate.json  # pyright: ignore[reportAttributeAccessIssue]
         candidate = json_payload() if callable(json_payload) else json_payload
 
     if hasattr(candidate, "to_dict"):
-        to_dict = candidate.to_dict
+        to_dict = candidate.to_dict  # pyright: ignore[reportAttributeAccessIssue]
         if callable(to_dict):
             candidate = to_dict()
 

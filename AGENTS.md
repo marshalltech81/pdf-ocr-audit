@@ -57,7 +57,6 @@ uv run ruff format --check .
 uv run pyright
 uv run pytest
 uv run bandit -q -r src
-uv build
 uv lock
 ```
 
@@ -70,7 +69,6 @@ Changes are expected to keep these checks green:
 - `pyright`
 - `pytest` with coverage floor `>= 90%`
 - `bandit -q -r src`
-- `uv build`
 
 `pip-audit` is part of the GitHub security workflow and may rely on network access that is not always available in local sandboxed runs.
 

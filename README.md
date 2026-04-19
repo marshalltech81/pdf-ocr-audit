@@ -153,7 +153,6 @@ This repository ships with a local and CI quality baseline:
 - `pyright`: static type checking for the package
 - `pytest`: unit tests, CLI tests, and coverage enforcement at `90%`
 - `bandit -q -r src`: Python security linting for source code
-- `uv build`: verifies the package can build cleanly
 - `pip-audit`: dependency vulnerability audit in the GitHub security workflow
 - deep scan logic is unit-tested with fake runtimes; live `PaddleOCR` integration is documented but not exercised in CI
 

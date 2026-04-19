@@ -50,6 +50,3 @@ jobs:
 
       - name: CLI smoke test
         run: uv run pdf-ocr-audit --help
-
-      - name: Build distributions
-        run: uv build

@@ -54,7 +54,7 @@ Use these commands unless the task specifically requires something else:
 uv sync --dev
 uv run ruff check .
 uv run ruff format --check .
-uv run mypy src
+uv run pyright
 uv run pytest
 uv run bandit -q -r src
 uv build
@@ -67,7 +67,7 @@ Changes are expected to keep these checks green:
 
 - `ruff check .`
 - `ruff format --check .`
-- `mypy src`
+- `pyright`
 - `pytest` with coverage floor `>= 90%`
 - `bandit -q -r src`
 - `uv build`

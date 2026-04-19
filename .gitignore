@@ -1,5 +1,5 @@
 .coverage
-.mypy_cache/
+.pyright_cache/
 .pytest_cache/
 .ruff_cache/
 .venv/

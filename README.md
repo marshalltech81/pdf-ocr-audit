@@ -137,7 +137,7 @@ uv sync --dev
 uv run pytest
 uv run ruff check .
 uv run ruff format --check .
-uv run mypy src
+uv run pyright
 uv run bandit -q -r src
 uv run pdf-ocr-audit /path/to/pdfs --recursive
 uv run pdf-ocr-audit /path/to/pdfs --recursive --deep-scan
@@ -150,7 +150,7 @@ This repository ships with a local and CI quality baseline:
 
 - `ruff check .`: linting, bug-prone pattern detection, and import ordering
 - `ruff format --check .`: formatting verification
-- `mypy src`: static type checking for the package
+- `pyright`: static type checking for the package
 - `pytest`: unit tests, CLI tests, and coverage enforcement at `90%`
 - `bandit -q -r src`: Python security linting for source code
 - `uv build`: verifies the package can build cleanly

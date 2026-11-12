@@ -60,6 +60,41 @@ uv run bandit -q -r src
 uv lock
 ```
 
+## Conventional Commits
+
+Pull request titles and every commit subject on `main` follow Conventional Commits:
+`<type>[(scope)][!]: description`, where type is one of `build`, `chore`, `ci`, `docs`, `feat`, `fix`,
+`perf`, `refactor`, `revert`, `style`, `test`. The `Conventional Commits` CI check runs
+`scripts/check_conventional_commit.py`, which you can run yourself with `--message "<subject>"`.
+Dependabot uses the prefix `chore(deps)`.
+
+## Security and GitHub Automation
+
+- Keep GitHub Actions workflow permissions minimal and explicit.
+- `.github/workflows/codex-gate.yml` writes the check `codex-review` from Codex's review comment
+  (`scripts/codex-gate.sh`); `.github/workflows/automerge.yml` turns on squash auto-merge for eligible
+  Dependabot pull requests (`scripts/automerge.sh`); `.github/workflows/conflicts.yml` labels pull requests that
+  conflict with `main` as `has-conflicts` (`scripts/flag-conflicts.sh`).
+- Those workflows run from the default branch through `workflow_run`, so a pull request's own code never runs
+  with their write token. Do not switch them to `pull_request`. The one `pull_request_target` use is the
+  `relabel` job in `automerge.yml`, which must keep checking out only the default branch and running nothing from
+  the pull request.
+- To hold a pull request, open it as a draft or add the `no-automerge` label before its first push; converting an
+  open pull request to a draft also stops the merge. Adding or removing `no-automerge` later also takes effect.
+- Merge (squash) a pull request by a person only on the owner's explicit go-ahead (owner, 2026-11-12; this
+  repository is public). Dependabot is the one exception: a Dependabot pull request that updates only patch or
+  minor versions, with Dependabot's own head commit, turns on auto-merge by itself once the required checks
+  pass and every review thread is resolved. `scripts/automerge.sh` leaves a person's pull request alone, except
+  that `no-automerge` turns off an auto-merge the owner enabled.
+- `main` is protected with classic branch protection, administrators included, so nobody can bypass it:
+  required checks must pass, history is linear, review conversations are resolved, force-push and deletion are
+  blocked. It does not require branches to be up to date; auto-merge and "Update branch" are on.
+- `codex-review` is not a required check yet: Codex has not been enabled for this repository. Once it is, add
+  `codex-review` to the required checks of `main`. Until then `scripts/automerge.sh` refuses to merge directly a
+  Dependabot pull request that is already clean when it runs (it will not skip the Codex review), so merge such a
+  pull request by hand.
+- Prefer pinned versions for GitHub Actions and keep them updated through Dependabot.
+
 ## Quality Bar
 
 Changes are expected to keep these checks green:

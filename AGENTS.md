@@ -89,10 +89,10 @@ Dependabot uses the prefix `chore(deps)`.
 - `main` is protected with classic branch protection, administrators included, so nobody can bypass it:
   required checks must pass, history is linear, review conversations are resolved, force-push and deletion are
   blocked. It does not require branches to be up to date; auto-merge and "Update branch" are on.
-- `codex-review` is not a required check yet: Codex has not been enabled for this repository. Once it is, add
-  `codex-review` to the required checks of `main`. Until then `scripts/automerge.sh` refuses to merge directly a
-  Dependabot pull request that is already clean when it runs (it will not skip the Codex review), so merge such a
-  pull request by hand.
+- `codex-review`, `Workflow Lint` and `Conventional Commits` are required checks of `main` (2026-11-12).
+  `codex-review` passes once Codex has completed its code and security review of the pull request's head commit,
+  so a push waits for the Codex review of that push. `scripts/automerge.sh` will not merge a pull request
+  directly unless the base branch requires `codex-review`, so keep it required.
 - Prefer pinned versions for GitHub Actions and keep them updated through Dependabot.
 
 ## Quality Bar
